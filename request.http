@@ -1,0 +1,15 @@
+### 1. Test Employee Salary API
+GET http://localhost:3000/api/admin/employees/all
+Content-Type: application/json
+
+### 2. Generate Salary Slip Example
+POST http://localhost:3000/api/admin/employees/66f2c.../salary
+Content-Type: application/json
+
+{
+  "month": "August",
+  "year": 2026,
+  "basicSalary": 50000,
+  "bonus": 5000,
+  "deduction": 2000
+}
