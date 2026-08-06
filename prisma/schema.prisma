@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum Status {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(EMPLOYEE)
+  status    Status   @default(PENDING)
+  createdAt DateTime @default(now())
+
+  profile   EmployeeProfile?
+  slips     SalarySlip[]
+}
+
+model EmployeeProfile {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @unique @db.ObjectId
+  department  String
+  designation String
+  cnic        String   @unique
+  phone       String
+  address     String
+  dob         DateTime
+  joiningDate DateTime
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SalarySlip {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  month       String
+  year        Int
+  basicSalary Float
+  bonus       Float    @default(0)
+  deduction   Float    @default(0)
+  netAmount   Float
+  status      String   @default("GENERATED") 
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, month, year])
+}

@@ -1,0 +1,19 @@
+import { NextResponse } from "next/server";
+import { getRejectedEmployees } from "@/features/employees/services/admin-employee.service";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  
+  if (session?.user?.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  try {
+    const result = await getRejectedEmployees();
+    return NextResponse.json(result, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to fetch rejected data" }, { status: 500 });
+  }
+}
